@@ -1,6 +1,8 @@
 jQuery(document).ready(function ($) {
-  // Functions for handling cookies (reusing from existing code)
-  const setCookie = (name, value, days) => {
+  console.log('Ad toggle script loaded');
+  
+  // Cookie functions
+  function setCookie(name, value, days) {
     var expires = '';
     if (days) {
       var date = new Date();
@@ -8,58 +10,31 @@ jQuery(document).ready(function ($) {
       expires = '; expires=' + date.toUTCString();
     }
     document.cookie = name + '=' + (value || '') + expires + '; path=/';
-  };
+    console.log('Setting cookie: ' + name + '=' + value);
+  }
 
-  const getCookie = (name) => {
-    return (
-      document.cookie
-        .split('; ')
-        .find((row) => row.startsWith(name + '='))
-        ?.split('=')[1] || null
-    );
-  };
+  function getCookie(name) {
+    var match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+    return match ? match[3] : null;
+  }
 
-  // Functions for hiding/showing ads
-  const hideCasinoHighlightBlocks = () => {
-    document.querySelectorAll('.code-block').forEach((element) => {
-      if (element) {
-        element.classList.add('d-none');
-      }
-    });
-  };
+  // Ad visibility functions
+  function hideCasinoHighlightBlocks() {
+    $('.code-block').addClass('d-none');
+    console.log('Hiding ads');
+  }
 
-  const displayCasinoHighlightBlocks = () => {
-    document.querySelectorAll('.code-block').forEach((element) => {
-      if (element) {
-        element.classList.remove('d-none');
-      }
-    });
-  };
+  function displayCasinoHighlightBlocks() {
+    $('.code-block').removeClass('d-none');
+    console.log('Showing ads');
+  }
 
-  // Initialize based on cookie
-  const handleInitialCheckboxState = () => {
-    const canSeeAds = getCookie('canSeeAds');
-    if (canSeeAds === 'true') {
-      $('#toggle_inputAds').prop('checked', false);
-      displayCasinoHighlightBlocks();
-    } else if (canSeeAds === 'false') {
-      $('#toggle_inputAds').prop('checked', true);
-      hideCasinoHighlightBlocks();
-    }
-  };
-
-  // Toggle button click handler
-  $('#toggle_inputAds, #labelToggle').on('click', function(e) {
-    if (e.target.id === 'labelToggle') {
-      // If the label was clicked, toggle the checkbox
-      $('#toggle_inputAds').prop('checked', !$('#toggle_inputAds').prop('checked'));
-    }
-    
-    // Get current state
-    const isChecked = $('#toggle_inputAds').prop('checked');
-    
-    // Update cookie and visibility based on checkbox state
-    if (isChecked) {
+  // Toggle button for ads
+  var $toggleInput = $('#toggle_inputAds');
+  
+  $toggleInput.on('change', function() {
+    console.log('Toggle changed: ' + this.checked);
+    if (this.checked) {
       setCookie('canSeeAds', 'false', 365);
       hideCasinoHighlightBlocks();
     } else {
@@ -68,6 +43,20 @@ jQuery(document).ready(function ($) {
     }
   });
 
-  // Run on page load
-  handleInitialCheckboxState();
+  // Initialize toggle button state based on cookie
+  function initToggleState() {
+    var cookieValue = getCookie('canSeeAds');
+    console.log('Cookie value:', cookieValue);
+    
+    if (cookieValue === 'true') {
+      displayCasinoHighlightBlocks();
+      $toggleInput.prop('checked', false);
+    } else {
+      hideCasinoHighlightBlocks();
+      $toggleInput.prop('checked', true);
+    }
+  }
+
+  // Run initialization on page load
+  initToggleState();
 });
