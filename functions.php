@@ -3,45 +3,60 @@
  * Blabber Child Theme functions and definitions
  */
 
-// Enqueue parent and child theme styles
+// Simplified and optimized style loading based on original theme approach
 function blabber_child_enqueue_styles() {
-    // Enqueue parent theme styles (if not already done by parent)
-    wp_enqueue_style('blabber-style', get_template_directory_uri() . '/style.css');
+    // Get parent theme version for cache busting
+    $parent_theme = wp_get_theme(get_template());
+    $parent_version = $parent_theme->get('Version');
+    
+    // Enqueue parent theme main stylesheet first (like original)
+    wp_enqueue_style('blabber-parent-style', 
+        get_template_directory_uri() . '/style.css', 
+        array(), 
+        $parent_version
+    );
 
-    // Enqueue child theme stylesheet, dependent on parent
+    // Enqueue child theme stylesheet with parent as dependency
     wp_enqueue_style('blabber-child-style',
         get_stylesheet_uri(),
-        array('blabber-style'),
+        array('blabber-parent-style'), // Depend on parent style
         wp_get_theme()->get('Version')
     );
 
-    // Enqueue the JavaScript for the toggle button
-    wp_enqueue_script('blabber-child-ad-toggle', get_stylesheet_directory_uri() . '/js/ad-toggle.js', array('jquery'), '1.0', true);
+    // Enqueue custom JavaScript for toggle functionality
+    wp_enqueue_script('blabber-child-ad-toggle', 
+        get_stylesheet_directory_uri() . '/js/ad-toggle.js', 
+        array('jquery'), 
+        wp_get_theme()->get('Version'), 
+        true
+    );
 
-    // Add inline CSS for utility classes
-    $inline_css = "\n    .d-none {\n        display: none !important;\n    }\n    .overflow-hidden {\n        overflow: hidden;\n    }";
+    // Add utility CSS classes for theme functionality
+    $inline_css = "
+    .d-none {
+        display: none !important;
+    }
+    .overflow-hidden {
+        overflow: hidden;
+    }";
     wp_add_inline_style('blabber-child-style', $inline_css);
 }
-add_action('wp_enqueue_scripts', 'blabber_child_enqueue_styles', 1600); // Adjusted priority to ensure child styles load last
+add_action('wp_enqueue_scripts', 'blabber_child_enqueue_styles', 15); // Load after parent theme styles
 
-// Enqueue additional parent theme styles
-function blabber_child_enqueue_parent_styles() {
-    wp_enqueue_style('blabber-fontello-icons', get_template_directory_uri() . '/css/font-icons/css/fontello.css', array(), null);
-    wp_enqueue_style('blabber-plugins', get_template_directory_uri() . '/css/__plugins.css', array(), null);
-    wp_enqueue_style('blabber-custom', get_template_directory_uri() . '/css/__custom.css', array(), null);
-    wp_enqueue_style('blabber-responsive', get_template_directory_uri() . '/css/__responsive.css', array(), null);
-}
-add_action('wp_enqueue_scripts', 'blabber_child_enqueue_parent_styles', 10);
-
-// Debug inline styles added by the parent theme
-function blabber_debug_inline_styles() {
-    // Check if inline styles are being added by the parent theme
-    $inline_styles = wp_styles()->get_data('blabber-inline-styles', 'after');
-    if (!empty($inline_styles)) {
-        error_log('Parent theme inline styles: ' . print_r($inline_styles, true));
+// Let parent theme handle its own style loading (like original approach)
+// Only add essential customizer CSS if needed
+function blabber_child_add_customizer_css() {
+    // Only add customizer CSS if parent theme functions are available
+    if (function_exists('blabber_customizer_get_css')) {
+        $custom_css = blabber_customizer_get_css();
+        
+        // Add the dynamic CSS as inline styles only if not empty
+        if (!empty($custom_css)) {
+            wp_add_inline_style('blabber-child-style', $custom_css);
+        }
     }
 }
-add_action('wp_enqueue_scripts', 'blabber_debug_inline_styles', 5);
+add_action('wp_enqueue_scripts', 'blabber_child_add_customizer_css', 20);
 
 // Register widgets area (sidebar)
 function blabber_child_widgets_init() {
