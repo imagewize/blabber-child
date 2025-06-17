@@ -1,0 +1,83 @@
+/*
+Theme Name: Blabber Child
+Theme URI: https://blabber.ancorathemes.com/
+Description: Blabber Child Theme
+Author: AncoraThemes
+Author URI: https://ancorathemes.com/
+Template: blabber
+Version: 1.0
+Text Domain: blabber-child
+*/
+
+/* =Theme customization starts here
+-------------------------------------------------------------- */
+
+/* Toggle button for hiding gambling ads */
+.toggle-input-block {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .toggle-input-block {
+    text-align: right;
+  }
+}
+
+.toggle-input-block .form-group {
+  display: inline-block;
+  position: relative;
+}
+
+.toggle-input-block #labelToggle {
+  position: relative;
+  font-size: 14px;
+  color: #ffffff;
+  cursor: pointer;
+  padding-left: 30px;
+  line-height: 22px;
+  display: inline-block;
+}
+
+.toggle-input-block #labelToggle:before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid rgba(41, 50, 78, 0.4);
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.toggle-input-block #labelToggle:after {
+  content: "";
+  height: 20px;
+  width: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='18px' height='18px'%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+  background-size: 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  display: none;
+}
+
+.toggle-input-block input[type=checkbox]:checked + #labelToggle:before {
+  background-color: #2da7cf;
+  border-color: #2da7cf !important;
+}
+
+.toggle-input-block input[type=checkbox]:checked + #labelToggle:after {
+  display: block;
+}
+
+.d-none {
+  display: none !important;
+}
