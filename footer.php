@@ -73,17 +73,6 @@
 
 	</div><!-- /.body_wrap -->
 
-<!-- Toggle button for hiding gambling ads -->
-<div class="toggle-input-block toggle-fixed">
-    <div class="form-group toggle-switch">
-        <input type="checkbox" name="toggle_ads" id="toggle_inputAds" class="toggle-checkbox">
-        <label id="labelToggle" for="toggle_inputAds" class="toggle-label">
-            <span class="toggle-inner"></span>
-            <span class="toggle-switch-label">Verberg gokreclames</span>
-        </label>
-    </div>
-</div>
-
 <?php
 	$logo           = get_field('fs_logo', 'option');
 $avs_buttons    = get_field('avs_buttons', 'option');

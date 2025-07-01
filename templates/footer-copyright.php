@@ -19,6 +19,7 @@ if ( ! empty( $blabber_copyright_scheme ) && ! blabber_is_inherit( $blabber_copy
 				">
 	<div class="footer_copyright_inner">
 		<div class="content_wrap">
+			<!-- DEBUG: Child theme footer-copyright template is loading -->
 			<!-- Toggle button for hiding gambling ads -->
 			<div class="toggle-input-block">
 				<div class="form-group">
