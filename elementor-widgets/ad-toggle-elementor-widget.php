@@ -165,59 +165,63 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
         <div class="ad-toggle-elementor-widget" style="margin-bottom: 15px;">
             <div class="ad-toggle-form-group" style="display: inline-block;">
                 <input type="checkbox" class="ad-toggle-checkbox" name="toggle_ads" id="<?php echo esc_attr($widget_id); ?>" style="display: none;">
-                <label class="ad-toggle-label" for="<?php echo esc_attr($widget_id); ?>" style="cursor: pointer; font-size: 14px; user-select: none; display: flex; align-items: center; gap: 10px;">
-                    <span style="width: 50px; height: 24px; display: inline-block; position: relative;"></span>
+                <label class="ad-toggle-label" for="<?php echo esc_attr($widget_id); ?>" style="cursor: pointer; font-size: 14px; user-select: none; display: flex; align-items: center; gap: 10px; position: relative;">
                     <?php echo esc_html($button_text); ?>
                 </label>
             </div>
         </div>
         
         <style>
-        /* Toggle slider styles for Elementor widget */
-        .ad-toggle-label:before {
+        /* Toggle slider styles for Elementor widget - specific to this widget instance */
+        #<?php echo esc_attr($widget_id); ?> + .ad-toggle-label {
+            color: white !important; /* Make text white */
+        }
+        
+        #<?php echo esc_attr($widget_id); ?> + .ad-toggle-label:before {
             content: '';
             display: inline-block;
-            width: 50px;
-            height: 24px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
+            width: 36px;
+            height: 20px;
+            background-color: #ffffff;
+            border-radius: 50px;
             position: relative;
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            order: -1; /* Place toggle before text */
         }
         
-        .ad-toggle-label:after {
+        #<?php echo esc_attr($widget_id); ?> + .ad-toggle-label:after {
             content: '';
             position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 18px;
-            height: 18px;
+            top: 60%;
+            left: 10px;
+            width: 16px;
+            height: 16px;
             background-color: #747474;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border-radius: 50px;
+            transition: all ease-in 0.2s;
+            transform: translateY(-50%);
+            z-index: 2; /* Ensure circle is above the pill background */
         }
         
-        .ad-toggle-checkbox:checked + .ad-toggle-label:before {
-            background-color: rgba(255, 255, 255, 0.4) !important;
-            border-color: rgba(255, 255, 255, 0.4) !important;
+        #<?php echo esc_attr($widget_id); ?>:checked + .ad-toggle-label:before {
+            background-color: #ffffff !important;
         }
         
-        .ad-toggle-checkbox:checked + .ad-toggle-label:after {
-            transform: translateX(26px) !important;
-            background-color: white !important;
+        #<?php echo esc_attr($widget_id); ?>:checked + .ad-toggle-label:after {
+            transform: translateY(-50%) translateX(16px) !important;
+            background-color: #747474 !important;
         }
         
         /* Override any background color changes on the label itself */
-        .ad-toggle-checkbox:checked + .ad-toggle-label {
+        #<?php echo esc_attr($widget_id); ?>:checked + .ad-toggle-label {
             background-color: transparent !important;
-            color: inherit !important;
+            color: white !important;
         }
         
         @media (max-width: 768px) {
-            .ad-toggle-label {
+            #<?php echo esc_attr($widget_id); ?> + .ad-toggle-label {
                 font-size: 13px !important;
+                color: white !important;
             }
         }
         </style>
@@ -312,8 +316,7 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
         <div class="ad-toggle-elementor-widget" style="margin-bottom: 15px;">
             <div class="ad-toggle-form-group" style="display: inline-block;">
                 <input type="checkbox" class="ad-toggle-checkbox" name="toggle_ads" id="{{{ widget_id }}}" style="display: none;">
-                <label class="ad-toggle-label" for="{{{ widget_id }}}" style="cursor: pointer; font-size: 14px; user-select: none; display: flex; align-items: center; gap: 10px;">
-                    <span style="width: 50px; height: 24px; display: inline-block; position: relative;"></span>
+                <label class="ad-toggle-label" for="{{{ widget_id }}}" style="cursor: pointer; font-size: 14px; user-select: none; display: flex; align-items: center; gap: 10px; position: relative;">
                     {{{ button_text }}}
                 </label>
             </div>
