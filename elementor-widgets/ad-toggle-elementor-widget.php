@@ -96,7 +96,7 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
             [
                 'label' => __('Background Color', 'blabber-child'),
                 'type' => \Elementor\Controls_Manager::COLOR,
-                'default' => '#f9f9f9',
+                'default' => 'transparent',
                 'selectors' => [
                     '{{WRAPPER}} .ad-toggle-label' => 'background-color: {{VALUE}}',
                 ],
@@ -108,9 +108,9 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
             [
                 'label' => __('Active Background Color', 'blabber-child'),
                 'type' => \Elementor\Controls_Manager::COLOR,
-                'default' => '#007cba',
+                'default' => 'transparent',
                 'selectors' => [
-                    '{{WRAPPER}} .ad-toggle-checkbox:checked + .ad-toggle-label' => 'background-color: {{VALUE}} !important; color: white !important;',
+                    '{{WRAPPER}} .ad-toggle-checkbox:checked + .ad-toggle-label' => 'background-color: {{VALUE}} !important; color: inherit !important;',
                 ],
             ]
         );
@@ -162,36 +162,62 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
         $alignment = !empty($settings['alignment']) ? $settings['alignment'] : 'right';
         $widget_id = uniqid('toggle_ads_');
         ?>
-        <div class="ad-toggle-elementor-widget" style="text-align: <?php echo esc_attr($alignment); ?>; margin-bottom: 15px;">
+        <div class="ad-toggle-elementor-widget" style="margin-bottom: 15px;">
             <div class="ad-toggle-form-group" style="display: inline-block;">
                 <input type="checkbox" class="ad-toggle-checkbox" name="toggle_ads" id="<?php echo esc_attr($widget_id); ?>" style="display: none;">
-                <label class="ad-toggle-label" for="<?php echo esc_attr($widget_id); ?>" style="cursor: pointer; font-size: 14px; user-select: none; padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; background-color: #f9f9f9; transition: all 0.3s ease; display: inline-block;">
+                <label class="ad-toggle-label" for="<?php echo esc_attr($widget_id); ?>" style="cursor: pointer; font-size: 14px; user-select: none; display: flex; align-items: center; gap: 10px;">
+                    <span style="width: 50px; height: 24px; display: inline-block; position: relative;"></span>
                     <?php echo esc_html($button_text); ?>
                 </label>
             </div>
         </div>
         
         <style>
-        .ad-toggle-label:hover {
-            background-color: #e9e9e9 !important;
-            border-color: #ccc !important;
+        /* Toggle slider styles for Elementor widget */
+        .ad-toggle-label:before {
+            content: '';
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
+        .ad-toggle-label:after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            background-color: #747474;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .ad-toggle-checkbox:checked + .ad-toggle-label:before {
+            background-color: rgba(255, 255, 255, 0.4) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+        }
+        
+        .ad-toggle-checkbox:checked + .ad-toggle-label:after {
+            transform: translateX(26px) !important;
+            background-color: white !important;
+        }
+        
+        /* Override any background color changes on the label itself */
         .ad-toggle-checkbox:checked + .ad-toggle-label {
-            background-color: #007cba !important;
-            color: white !important;
-            border-color: #007cba !important;
+            background-color: transparent !important;
+            color: inherit !important;
         }
         
         @media (max-width: 768px) {
-            .ad-toggle-elementor-widget {
-                text-align: center !important;
-                margin-bottom: 20px !important;
-            }
-            
             .ad-toggle-label {
                 font-size: 13px !important;
-                padding: 8px 12px !important;
             }
         }
         </style>
@@ -199,7 +225,10 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
         <script>
         jQuery(document).ready(function($) {
             // Initialize toggle functionality for Elementor widget
-            $('#<?php echo esc_js($widget_id); ?>').on('change', function() {
+            $('#<?php echo esc_js($widget_id); ?>').on('change', function(e) {
+                // Prevent any default scrolling behavior
+                e.preventDefault();
+                
                 // Cookie functions
                 function setCookie(name, value, days) {
                     var expires = '';
@@ -216,14 +245,20 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
                     return match ? match[3] : null;
                 }
 
-                // Ad visibility functions
+                // Ad visibility functions with scroll prevention
                 function hideCasinoHighlightBlocks() {
+                    var currentScrollPosition = $(window).scrollTop();
                     $('.code-block').addClass('d-none');
+                    // Restore scroll position to prevent jumping
+                    $(window).scrollTop(currentScrollPosition);
                     console.log('Hiding ads');
                 }
 
                 function displayCasinoHighlightBlocks() {
+                    var currentScrollPosition = $(window).scrollTop();
                     $('.code-block').removeClass('d-none');
+                    // Restore scroll position to prevent jumping
+                    $(window).scrollTop(currentScrollPosition);
                     console.log('Showing ads');
                 }
                 
@@ -243,11 +278,15 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
             }
             
             function hideCasinoHighlightBlocks() {
+                var currentScrollPosition = $(window).scrollTop();
                 $('.code-block').addClass('d-none');
+                $(window).scrollTop(currentScrollPosition);
             }
 
             function displayCasinoHighlightBlocks() {
+                var currentScrollPosition = $(window).scrollTop();
                 $('.code-block').removeClass('d-none');
+                $(window).scrollTop(currentScrollPosition);
             }
             
             var cookieValue = getCookie('canSeeAds');
@@ -270,10 +309,11 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
         var alignment = settings.alignment || 'right';
         var widget_id = 'toggle_ads_' + Math.random().toString(36).substr(2, 9);
         #>
-        <div class="ad-toggle-elementor-widget" style="text-align: {{{ alignment }}}; margin-bottom: 15px;">
+        <div class="ad-toggle-elementor-widget" style="margin-bottom: 15px;">
             <div class="ad-toggle-form-group" style="display: inline-block;">
                 <input type="checkbox" class="ad-toggle-checkbox" name="toggle_ads" id="{{{ widget_id }}}" style="display: none;">
-                <label class="ad-toggle-label" for="{{{ widget_id }}}" style="cursor: pointer; font-size: 14px; user-select: none; padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; background-color: #f9f9f9; transition: all 0.3s ease; display: inline-block;">
+                <label class="ad-toggle-label" for="{{{ widget_id }}}" style="cursor: pointer; font-size: 14px; user-select: none; display: flex; align-items: center; gap: 10px;">
+                    <span style="width: 50px; height: 24px; display: inline-block; position: relative;"></span>
                     {{{ button_text }}}
                 </label>
             </div>

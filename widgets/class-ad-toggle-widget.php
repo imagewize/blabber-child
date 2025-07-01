@@ -38,64 +38,73 @@ class Ad_Toggle_Widget extends WP_Widget {
         // Widget content
         ?>
         <div class="ad-toggle-widget-content" style="text-align: <?php echo esc_attr($alignment); ?>;">
-            <div class="toggle-input-block">
-                <div class="form-group">
-                    <input type="checkbox" class="d-none" name="" id="toggle_inputAds_widget">
-                    <label id="labelToggleWidget" for="toggle_inputAds_widget"><?php echo esc_html($button_text); ?></label>
-                </div>
+            <div class="ad-toggle-container">
+                <input type="checkbox" id="toggle_inputAds_widget" class="ad-toggle-input">
+                <label for="toggle_inputAds_widget" class="ad-toggle-label">
+                    <span class="ad-toggle-text"><?php echo esc_html($button_text); ?></span>
+                    <div class="ad-toggle-switch">
+                        <div class="ad-toggle-circle"></div>
+                    </div>
+                </label>
             </div>
         </div>
         
         <style>
-        .ad-toggle-widget-content .toggle-input-block {
-            margin-bottom: 0;
+        .ad-toggle-widget-content {
+            margin: 0;
+            padding: 0;
         }
         
-        .ad-toggle-widget-content .toggle-input-block .form-group {
+        .ad-toggle-container {
             display: inline-block;
         }
         
-        .ad-toggle-widget-content .toggle-input-block label {
+        .ad-toggle-input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+        
+        .ad-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             cursor: pointer;
             font-size: 14px;
             color: #666;
             user-select: none;
-            padding: 5px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #f9f9f9;
+        }
+        
+        .ad-toggle-switch {
+            position: relative;
+            width: 32px;
+            height: 18px;
+            background-color: transparent;
+            border: 1px solid #ccc;
+            border-radius: 9px;
             transition: all 0.3s ease;
-            display: inline-block;
         }
         
-        .ad-toggle-widget-content .toggle-input-block label:hover {
-            background-color: #e9e9e9;
-            border-color: #ccc;
+        .ad-toggle-circle {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 14px;
+            height: 14px;
+            background-color: #747474;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
         }
         
-        .ad-toggle-widget-content .toggle-input-block input[type="checkbox"]:checked + label {
-            background-color: #007cba;
-            color: white;
-            border-color: #007cba;
-        }
-        
-        .ad-toggle-widget-content .toggle-input-block input[type=checkbox] {
-            opacity: 0;
-            width: 0;
-            height: 0;
-            margin: 0;
-            padding: 0;
+        .ad-toggle-input:checked + .ad-toggle-label .ad-toggle-circle {
+            transform: translateX(14px);
         }
         
         /* Mobile responsiveness */
         @media (max-width: 768px) {
             .ad-toggle-widget-content[style*="right"] {
                 text-align: center !important;
-            }
-            
-            .ad-toggle-widget-content .toggle-input-block label {
-                font-size: 13px;
-                padding: 8px 12px;
             }
         }
         </style>
@@ -132,7 +141,11 @@ class Ad_Toggle_Widget extends WP_Widget {
                 }
                 
                 // Toggle functionality
-                $widgetToggle.on('change', function() {
+                $widgetToggle.on('change', function(e) {
+                    // Prevent scroll jump
+                    e.preventDefault();
+                    var currentScrollTop = $(window).scrollTop();
+                    
                     if (this.checked) {
                         setCookie('canSeeAds', 'false', 365);
                         hideCasinoHighlightBlocks();
@@ -140,6 +153,11 @@ class Ad_Toggle_Widget extends WP_Widget {
                         setCookie('canSeeAds', 'true', 365);
                         displayCasinoHighlightBlocks();
                     }
+                    
+                    // Restore scroll position
+                    setTimeout(function() {
+                        $(window).scrollTop(currentScrollTop);
+                    }, 10);
                 });
 
                 // Initialize state based on cookie

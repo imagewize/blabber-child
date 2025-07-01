@@ -18,14 +18,20 @@ jQuery(document).ready(function ($) {
     return match ? match[3] : null;
   }
 
-  // Ad visibility functions
+  // Ad visibility functions with scroll prevention
   function hideCasinoHighlightBlocks() {
+    var currentScrollPosition = $(window).scrollTop();
     $('.code-block').addClass('d-none');
+    // Restore scroll position to prevent jumping
+    $(window).scrollTop(currentScrollPosition);
     console.log('Hiding ads');
   }
 
   function displayCasinoHighlightBlocks() {
+    var currentScrollPosition = $(window).scrollTop();
     $('.code-block').removeClass('d-none');
+    // Restore scroll position to prevent jumping
+    $(window).scrollTop(currentScrollPosition);
     console.log('Showing ads');
   }
 
