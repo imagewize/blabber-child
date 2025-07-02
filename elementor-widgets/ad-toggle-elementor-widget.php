@@ -210,7 +210,7 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
         $alignment = !empty($settings['alignment']) ? $settings['alignment'] : 'right';
         $widget_id = uniqid('toggle_ads_');
         ?>
-        <div class="ad-toggle-elementor-widget" style="margin-bottom: 15px;">
+        <div class="ad-toggle-elementor-widget">
             <div class="ad-toggle-form-group" style="display: inline-block;">
                 <input type="checkbox" class="ad-toggle-checkbox" name="toggle_ads" id="<?php echo esc_attr($widget_id); ?>" style="display: none;">
                 <label class="ad-toggle-label" for="<?php echo esc_attr($widget_id); ?>" style="cursor: pointer; font-size: 14px; user-select: none; display: flex; align-items: center; gap: 10px; position: relative;">
@@ -361,7 +361,7 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
         var alignment = settings.alignment || 'right';
         var widget_id = 'toggle_ads_' + Math.random().toString(36).substr(2, 9);
         #>
-        <div class="ad-toggle-elementor-widget" style="margin-bottom: 15px;">
+        <div class="ad-toggle-elementor-widget">
             <div class="ad-toggle-form-group" style="display: inline-block;">
                 <input type="checkbox" class="ad-toggle-checkbox" name="toggle_ads" id="{{{ widget_id }}}" style="display: none;">
                 <label class="ad-toggle-label" for="{{{ widget_id }}}" style="cursor: pointer; font-size: 14px; user-select: none; display: flex; align-items: center; gap: 10px; position: relative;">
