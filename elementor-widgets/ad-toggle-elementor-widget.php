@@ -153,6 +153,54 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
             ]
         );
 
+        $this->add_control(
+            'toggle_bg_color',
+            [
+                'label' => __('Toggle Background Color', 'blabber-child'),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'default' => '#ffffff',
+                'selectors' => [
+                    '{{WRAPPER}} .ad-toggle-label:before' => 'background-color: {{VALUE}}',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'toggle_circle_color',
+            [
+                'label' => __('Toggle Circle Color', 'blabber-child'),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'default' => '#747474',
+                'selectors' => [
+                    '{{WRAPPER}} .ad-toggle-label:after' => 'background-color: {{VALUE}}',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'toggle_size',
+            [
+                'label' => __('Toggle Size', 'blabber-child'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range' => [
+                    'px' => [
+                        'min' => 20,
+                        'max' => 60,
+                        'step' => 2,
+                    ],
+                ],
+                'default' => [
+                    'unit' => 'px',
+                    'size' => 36,
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .ad-toggle-label:before' => 'width: {{SIZE}}{{UNIT}}; height: calc({{SIZE}}{{UNIT}} * 0.55);',
+                    '{{WRAPPER}} .ad-toggle-label:after' => 'width: calc({{SIZE}}{{UNIT}} * 0.44); height: calc({{SIZE}}{{UNIT}} * 0.44);',
+                ],
+            ]
+        );
+
         $this->end_controls_section();
     }
 
@@ -321,6 +369,53 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
                 </label>
             </div>
         </div>
+        
+        <style>
+        /* Editor preview styles for toggle */
+        #{{{ widget_id }}} + .ad-toggle-label {
+            color: white !important;
+        }
+        
+        #{{{ widget_id }}} + .ad-toggle-label:before {
+            content: '';
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+            background-color: #ffffff;
+            border-radius: 50px;
+            position: relative;
+            transition: all 0.3s ease;
+            order: -1;
+        }
+        
+        #{{{ widget_id }}} + .ad-toggle-label:after {
+            content: '';
+            position: absolute;
+            top: 60%;
+            left: 10px;
+            width: 16px;
+            height: 16px;
+            background-color: #747474;
+            border-radius: 50px;
+            transition: all ease-in 0.2s;
+            transform: translateY(-50%);
+            z-index: 2;
+        }
+        
+        #{{{ widget_id }}}:checked + .ad-toggle-label:before {
+            background-color: #ffffff !important;
+        }
+        
+        #{{{ widget_id }}}:checked + .ad-toggle-label:after {
+            transform: translateY(-50%) translateX(16px) !important;
+            background-color: #747474 !important;
+        }
+        
+        #{{{ widget_id }}}:checked + .ad-toggle-label {
+            background-color: transparent !important;
+            color: white !important;
+        }
+        </style>
         <?php
     }
 }
