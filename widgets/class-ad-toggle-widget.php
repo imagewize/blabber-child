@@ -72,17 +72,17 @@ class Ad_Toggle_Widget extends WP_Widget {
             gap: 8px;
             cursor: pointer;
             font-size: 14px;
-            color: #666;
+            color: inherit; /* Use parent color instead of fixed #666 */
             user-select: none;
         }
         
         .ad-toggle-switch {
             position: relative;
-            width: 32px;
-            height: 18px;
-            background-color: transparent;
-            border: 1px solid #ccc;
-            border-radius: 9px;
+            width: 36px;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
             transition: all 0.3s ease;
         }
         
@@ -90,15 +90,22 @@ class Ad_Toggle_Widget extends WP_Widget {
             position: absolute;
             top: 1px;
             left: 1px;
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             background-color: #747474;
             border-radius: 50%;
             transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .ad-toggle-input:checked + .ad-toggle-label .ad-toggle-switch {
+            background-color: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.4);
         }
         
         .ad-toggle-input:checked + .ad-toggle-label .ad-toggle-circle {
-            transform: translateX(14px);
+            transform: translateX(16px);
+            background-color: white;
         }
         
         /* Mobile responsiveness */
