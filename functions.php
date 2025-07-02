@@ -3,23 +3,15 @@
  * Blabber Child Theme functions and definitions
  */
 
-// Simplified and optimized style loading based on original theme approach
+// Let parent theme handle all its own style loading (including skin styles)
+// Then add child theme styles afterward
 function blabber_child_enqueue_styles() {
-    // Get parent theme version for cache busting
-    $parent_theme = wp_get_theme(get_template());
-    $parent_version = $parent_theme->get('Version');
+    // Don't manually enqueue parent styles - let the parent theme do it
     
-    // Enqueue parent theme main stylesheet first (like original)
-    wp_enqueue_style('blabber-parent-style', 
-        get_template_directory_uri() . '/style.css', 
-        array(), 
-        $parent_version
-    );
-
-    // Enqueue child theme stylesheet with parent as dependency
+    // Enqueue child theme stylesheet AFTER all parent theme styles
     wp_enqueue_style('blabber-child-style',
         get_stylesheet_uri(),
-        array('blabber-parent-style'), // Depend on parent style
+        array(), // Remove dependency to let it load after parent theme styles
         wp_get_theme()->get('Version')
     );
 
@@ -41,7 +33,8 @@ function blabber_child_enqueue_styles() {
     }";
     wp_add_inline_style('blabber-child-style', $inline_css);
 }
-add_action('wp_enqueue_scripts', 'blabber_child_enqueue_styles', 15); // Load after parent theme styles
+// Load at priority 20 to ensure it runs AFTER parent theme's style loading
+add_action('wp_enqueue_scripts', 'blabber_child_enqueue_styles', 20);
 
 // Let parent theme handle its own style loading (like original approach)
 // Only add essential customizer CSS if needed
@@ -56,7 +49,7 @@ function blabber_child_add_customizer_css() {
         }
     }
 }
-add_action('wp_enqueue_scripts', 'blabber_child_add_customizer_css', 20);
+add_action('wp_enqueue_scripts', 'blabber_child_add_customizer_css', 25);
 
 // Register widgets area (sidebar)
 function blabber_child_widgets_init() {
@@ -72,3 +65,38 @@ function blabber_child_widgets_init() {
     ));
 }
 add_action('widgets_init', 'blabber_child_widgets_init');
+
+// Include and register Ad Toggle Widget
+require_once get_stylesheet_directory() . '/widgets/class-ad-toggle-widget.php';
+
+function blabber_child_register_ad_toggle_widget() {
+    register_widget('Ad_Toggle_Widget');
+}
+add_action('widgets_init', 'blabber_child_register_ad_toggle_widget');
+
+// Register Elementor Ad Toggle Widget
+function blabber_child_register_elementor_widgets($widgets_manager) {
+    // Check if Elementor is active
+    if (!class_exists('\Elementor\Widget_Base')) {
+        return;
+    }
+
+    // Include the widget file
+    require_once get_stylesheet_directory() . '/elementor-widgets/ad-toggle-elementor-widget.php';
+
+    // Register the widget
+    $widgets_manager->register(new \Ad_Toggle_Elementor_Widget());
+}
+add_action('elementor/widgets/register', 'blabber_child_register_elementor_widgets');
+
+// Register Elementor widget category (optional)
+function blabber_child_add_elementor_widget_categories($elements_manager) {
+    $elements_manager->add_category(
+        'blabber-child',
+        [
+            'title' => __('Blabber Child', 'blabber-child'),
+            'icon' => 'fa fa-plug',
+        ]
+    );
+}
+add_action('elementor/elements/categories_registered', 'blabber_child_add_elementor_widget_categories');

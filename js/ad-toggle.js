@@ -18,33 +18,39 @@ jQuery(document).ready(function ($) {
     return match ? match[3] : null;
   }
 
-  // Ad visibility functions
+  // Ad visibility functions with scroll prevention
   function hideCasinoHighlightBlocks() {
+    var currentScrollPosition = $(window).scrollTop();
     $('.code-block').addClass('d-none');
+    // Restore scroll position to prevent jumping
+    $(window).scrollTop(currentScrollPosition);
     console.log('Hiding ads');
   }
 
   function displayCasinoHighlightBlocks() {
+    var currentScrollPosition = $(window).scrollTop();
     $('.code-block').removeClass('d-none');
+    // Restore scroll position to prevent jumping
+    $(window).scrollTop(currentScrollPosition);
     console.log('Showing ads');
   }
 
-  // Toggle button for ads
+  // Toggle button for ads (fallback for any manual toggles)
   var $toggleInput = $('#toggle_inputAds');
   
-  $toggleInput.on('change', function() {
-    console.log('Toggle changed: ' + this.checked);
-    if (this.checked) {
-      setCookie('canSeeAds', 'false', 365);
-      hideCasinoHighlightBlocks();
-    } else {
-      setCookie('canSeeAds', 'true', 365);
-      displayCasinoHighlightBlocks();
-    }
-  });
+  if ($toggleInput.length > 0) {
+    $toggleInput.on('change', function() {
+      console.log('Toggle changed: ' + this.checked);
+      if (this.checked) {
+        setCookie('canSeeAds', 'false', 365);
+        hideCasinoHighlightBlocks();
+      } else {
+        setCookie('canSeeAds', 'true', 365);
+        displayCasinoHighlightBlocks();
+      }
+    });
 
-  // Initialize toggle button state based on cookie
-  function initToggleState() {
+    // Initialize toggle button state based on cookie
     var cookieValue = getCookie('canSeeAds');
     console.log('Cookie value:', cookieValue);
     
@@ -56,7 +62,4 @@ jQuery(document).ready(function ($) {
       $toggleInput.prop('checked', true);
     }
   }
-
-  // Run initialization on page load
-  initToggleState();
 });

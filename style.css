@@ -12,107 +12,25 @@ Text Domain: blabber-child
 /* =Theme customization starts here
 -------------------------------------------------------------- */
 
-/* Toggle button for hiding gambling ads */
-.toggle-input-block {
-  margin-bottom: 15px;
-  text-align: center;
+/* Ensure proper spacing and order with copyright text */
+.copyright_text {
+    margin-top: 10px;
+    order: 1; /* Ensure it appears after toggle if parent uses flexbox */
 }
 
-@media (min-width: 768px) {
-  .toggle-input-block {
-    text-align: right;
-  }
+/* Override parent theme's center alignment for footer copyright */
+.footer_copyright_inner {
+    text-align: left; /* Override parent theme's center alignment */
 }
 
-.toggle-input-block.toggle-fixed {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
-  background-color: rgba(45, 167, 207, 0.9);
-  padding: 10px 15px;
-  border-radius: 5px;
-  margin: 0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+/* Ensure proper content_wrap layout */
+.footer_copyright_inner .content_wrap {
+    display: block; /* Override any flexbox that might reorder elements */
 }
 
-/* Slider Toggle Switch Styling */
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-}
-
-.toggle-checkbox {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  color: #ffffff;
-  font-size: 14px;
-  line-height: 24px;
-}
-
-.toggle-inner {
-  display: inline-block;
-  position: relative;
-  width: 50px;
-  height: 24px;
-  background-color: #ccc;
-  border-radius: 34px;
-  transition: .4s;
-  margin-right: 10px;
-}
-
-.toggle-inner:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  border-radius: 50%;
-  transition: .4s;
-}
-
-.toggle-checkbox:checked + .toggle-label .toggle-inner {
-  background-color: #2da7cf;
-}
-
-.toggle-checkbox:checked + .toggle-label .toggle-inner:before {
-  transform: translateX(26px);
-}
-
-.toggle-checkbox:focus + .toggle-label .toggle-inner {
-  box-shadow: 0 0 1px #2da7cf;
-}
-
-/* Fix for checkbox styling */
-.toggle-input-block input[type=checkbox] {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
+/* Removed fixed toggle - toggle is now inline in footer only */
 
 /* Utility class for hiding gambling ads */
-.d-none {
-  display: none !important;
-}
-
-/* Overflow class for body when modal is shown */
-.overflow-hidden {
-  overflow: hidden;
-}
-
 .d-none {
   display: none !important;
 }
