@@ -101,46 +101,44 @@ function blabber_child_add_elementor_widget_categories($elements_manager) {
 }
 add_action('elementor/elements/categories_registered', 'blabber_child_add_elementor_widget_categories');
 
-// Override parent theme's custom_author_acf_avatar function to fix type error
-if (!function_exists('custom_author_acf_avatar')) {
-    function custom_author_acf_avatar($avatar, $id_or_email, $size = 96, $default = '', $alt = '') {
-        // Get user ID from various input types
-        if (is_numeric($id_or_email)) {
-            $user_id = (int) $id_or_email;
-        } elseif (is_string($id_or_email) && is_email($id_or_email)) {
-            $user = get_user_by('email', $id_or_email);
-            $user_id = $user ? $user->ID : 0;
-        } elseif (is_object($id_or_email) && !empty($id_or_email->user_id)) {
-            $user_id = (int) $id_or_email->user_id;
-        } else {
-            return $avatar; // Return original avatar if we can't determine user ID
-        }
-
-        if ($user_id && function_exists('get_field')) {
-            $custom_avatar = get_field('avatar', 'user_' . $user_id);
-            
-            if ($custom_avatar && is_array($custom_avatar)) {
-                $avatar_url = isset($custom_avatar['url']) ? $custom_avatar['url'] : '';
-                $avatar_alt = isset($custom_avatar['alt']) ? $custom_avatar['alt'] : $alt;
-                
-                if ($avatar_url) {
-                    return '<img alt="' . esc_attr($avatar_alt) . '" src="' . esc_url($avatar_url) . '" class="avatar avatar-' . esc_attr($size) . ' photo" height="' . esc_attr($size) . '" width="' . esc_attr($size) . '" />';
-                }
-            } elseif ($custom_avatar && is_string($custom_avatar)) {
-                // Handle case where custom_avatar is a URL string
-                return '<img alt="' . esc_attr($alt) . '" src="' . esc_url($custom_avatar) . '" class="avatar avatar-' . esc_attr($size) . ' photo" height="' . esc_attr($size) . '" width="' . esc_attr($size) . '" />';
-            }
-        }
-        
-        return $avatar; // Return original avatar if no custom avatar found
+// Fix parent theme's avatar function by overriding the filter with a safe version
+function blabber_child_safe_avatar($avatar, $id_or_email, $size = 96, $default = '', $alt = '') {
+    // Get user ID from various input types
+    if (is_numeric($id_or_email)) {
+        $user_id = (int) $id_or_email;
+    } elseif (is_string($id_or_email) && is_email($id_or_email)) {
+        $user = get_user_by('email', $id_or_email);
+        $user_id = $user ? $user->ID : 0;
+    } elseif (is_object($id_or_email) && !empty($id_or_email->user_id)) {
+        $user_id = (int) $id_or_email->user_id;
+    } else {
+        return $avatar; // Return original avatar if we can't determine user ID
     }
+
+    if ($user_id && function_exists('get_field')) {
+        $custom_avatar = get_field('avatar', 'user_' . $user_id);
+        
+        if ($custom_avatar && is_array($custom_avatar)) {
+            $avatar_url = isset($custom_avatar['url']) ? $custom_avatar['url'] : '';
+            $avatar_alt = isset($custom_avatar['alt']) ? $custom_avatar['alt'] : $alt;
+            
+            if ($avatar_url) {
+                return '<img alt="' . esc_attr($avatar_alt) . '" src="' . esc_url($avatar_url) . '" class="avatar avatar-' . esc_attr($size) . ' photo" height="' . esc_attr($size) . '" width="' . esc_attr($size) . '" />';
+            }
+        } elseif ($custom_avatar && is_string($custom_avatar)) {
+            // Handle case where custom_avatar is a URL string
+            return '<img alt="' . esc_attr($alt) . '" src="' . esc_url($custom_avatar) . '" class="avatar avatar-' . esc_attr($size) . ' photo" height="' . esc_attr($size) . '" width="' . esc_attr($size) . '" />';
+        }
+    }
+    
+    return $avatar; // Return original avatar if no custom avatar found
 }
 
-// Ensure our override takes precedence over the parent theme's function
+// Override the parent theme's problematic avatar function
 function blabber_child_override_avatar_function() {
-    // Remove the parent theme's filter if it exists
+    // Remove the parent theme's filter that causes the error
     remove_filter('get_avatar', 'custom_author_acf_avatar', 10, 5);
-    // Add our own filter
-    add_filter('get_avatar', 'custom_author_acf_avatar', 10, 5);
+    // Add our safe version instead
+    add_filter('get_avatar', 'blabber_child_safe_avatar', 10, 5);
 }
-add_action('after_setup_theme', 'blabber_child_override_avatar_function', 11);
+add_action('init', 'blabber_child_override_avatar_function', 1);
