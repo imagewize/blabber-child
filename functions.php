@@ -142,3 +142,39 @@ function blabber_child_override_avatar_function() {
     add_filter('get_avatar', 'blabber_child_safe_avatar', 10, 5);
 }
 add_action('init', 'blabber_child_override_avatar_function', 1);
+
+/**
+ * Prevent Blabber theme from resizing banner container iframes
+ * This allows banners to maintain their original dimensions
+ */
+function blabber_child_exclude_banner_iframes_from_resizing() {
+    ?>
+    <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        // Override theme's iframe resize function to exclude banner iframes
+        if (typeof blabber_resize_video === 'function') {
+            var original_blabber_resize_video = blabber_resize_video;
+            
+            blabber_resize_video = function(cont) {
+                if (cont === undefined) {
+                    cont = jQuery('body');
+                }
+                
+                // Get all iframe elements that would normally be resized
+                var iframes = cont.find('.video_frame iframe, .page_content_wrap iframe');
+                
+                // Exclude banner container iframes from resizing
+                var banner_iframes = iframes.filter('.iwz-footer-banner iframe, .iwz-head-banner iframe, .iwz-content-banner iframe, .iwz-sidebar-banner iframe, .iwz-menu-banner iframe, .iwz-blabber-footer-banner iframe, .iwz-blabber-header-banner iframe');
+                
+                // Mark banner iframes to prevent theme resizing
+                banner_iframes.addClass('trx_addons_noresize blabber_noresize');
+                
+                // Call original resize function
+                original_blabber_resize_video.call(this, cont);
+            };
+        }
+    });
+    </script>
+    <?php
+}
+add_action('wp_footer', 'blabber_child_exclude_banner_iframes_from_resizing', 1); // Early priority
