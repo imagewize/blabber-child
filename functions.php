@@ -144,37 +144,47 @@ function blabber_child_override_avatar_function() {
 add_action('init', 'blabber_child_override_avatar_function', 1);
 
 /**
- * Prevent Blabber theme from resizing banner container iframes
- * This allows banners to maintain their original dimensions
+ * Prevent Blabber theme from resizing banner container iframes - IMPROVED VERSION
+ * Uses the theme's built-in exclusion system and CSS priority enforcement
+ * This approach is more reliable than the timeout-based JavaScript solution
  */
-function blabber_child_exclude_banner_iframes_from_resizing() {
+function blabber_child_prevent_banner_iframe_resizing() {
     ?>
     <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        // Override theme's iframe resize function to exclude banner iframes
-        if (typeof blabber_resize_video === 'function') {
-            var original_blabber_resize_video = blabber_resize_video;
+    jQuery(document).ready(function($) {
+        // Mark banner iframes to be excluded from theme resizing using the theme's built-in exclusion classes
+        // The Blabber theme checks for these classes in its blabber_resize_video() function
+        $('.iwz-footer-banner iframe, .iwz-head-banner iframe, .iwz-content-banner iframe, .iwz-sidebar-banner iframe, .iwz-menu-banner iframe, .iwz-blabber-footer-banner iframe, .iwz-blabber-header-banner iframe')
+            .addClass('blabber_noresize trx_addons_noresize');
+        
+        // Preserve original dimensions for banner iframes by setting them with !important priority
+        // This ensures they override any inline styles set by the theme's JavaScript
+        $('.iwz-footer-banner iframe, .iwz-head-banner iframe, .iwz-content-banner iframe, .iwz-sidebar-banner iframe, .iwz-menu-banner iframe, .iwz-blabber-footer-banner iframe, .iwz-blabber-header-banner iframe').each(function() {
+            var $iframe = $(this);
+            var originalWidth = $iframe.attr('width');
+            var originalHeight = $iframe.attr('height');
             
-            blabber_resize_video = function(cont) {
-                if (cont === undefined) {
-                    cont = jQuery('body');
-                }
+            // Only proceed if both width and height attributes exist
+            if (originalWidth && originalHeight) {
+                // Store original dimensions as data attributes for reference
+                $iframe.data('original-width', originalWidth);
+                $iframe.data('original-height', originalHeight);
                 
-                // Get all iframe elements that would normally be resized
-                var iframes = cont.find('.video_frame iframe, .page_content_wrap iframe');
+                // Set dimensions as inline styles with !important flag to override theme's JavaScript
+                // Using setProperty with 'important' flag ensures highest CSS priority
+                this.style.setProperty('width', originalWidth + 'px', 'important');
+                this.style.setProperty('height', originalHeight + 'px', 'important');
                 
-                // Exclude banner container iframes from resizing
-                var banner_iframes = iframes.filter('.iwz-footer-banner iframe, .iwz-head-banner iframe, .iwz-content-banner iframe, .iwz-sidebar-banner iframe, .iwz-menu-banner iframe, .iwz-blabber-footer-banner iframe, .iwz-blabber-header-banner iframe');
-                
-                // Mark banner iframes to prevent theme resizing
-                banner_iframes.addClass('trx_addons_noresize blabber_noresize');
-                
-                // Call original resize function
-                original_blabber_resize_video.call(this, cont);
-            };
-        }
+                // Also set margin and padding to prevent spacing issues
+                this.style.setProperty('margin', '0', 'important');
+                this.style.setProperty('padding', '0', 'important');
+                this.style.setProperty('display', 'block', 'important');
+                this.style.setProperty('vertical-align', 'top', 'important');
+            }
+        });
     });
     </script>
     <?php
 }
-add_action('wp_footer', 'blabber_child_exclude_banner_iframes_from_resizing', 1); // Early priority
+// Use early priority (1) to ensure this runs before the theme's resize function
+add_action('wp_footer', 'blabber_child_prevent_banner_iframe_resizing', 1);
