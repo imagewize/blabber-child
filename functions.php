@@ -175,8 +175,12 @@ function blabber_child_prevent_banner_iframe_resizing() {
                 this.style.setProperty('width', originalWidth + 'px', 'important');
                 this.style.setProperty('height', originalHeight + 'px', 'important');
                 
-                // Also set margin and padding to prevent spacing issues
-                this.style.setProperty('margin', '0', 'important');
+                // Set margin and padding - use auto margins for centering blabber footer banners
+                if ($iframe.closest('.iwz-blabber-footer-banner').length > 0) {
+                    this.style.setProperty('margin', '0 auto', 'important');
+                } else {
+                    this.style.setProperty('margin', '0', 'important');
+                }
                 this.style.setProperty('padding', '0', 'important');
                 this.style.setProperty('display', 'block', 'important');
                 this.style.setProperty('vertical-align', 'top', 'important');
