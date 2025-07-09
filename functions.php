@@ -147,6 +147,18 @@ add_action('init', 'blabber_child_override_avatar_function', 1);
  * Prevent Blabber theme from resizing banner container iframes - IMPROVED VERSION
  * Uses the theme's built-in exclusion system and CSS priority enforcement
  * This approach is more reliable than the timeout-based JavaScript solution
+ * 
+ * IMPORTANT: This solution covers ALL banner types including:
+ * - Footer banners (.iwz-footer-banner)
+ * - Blabber Footer banners (.iwz-blabber-footer-banner) 
+ * - Blabber Footer Start banners (div[id^="iwz-banner-blabber_footer_start-"])
+ * - Header, Content, Sidebar, and Menu banners
+ * 
+ * The Blabber theme's JavaScript automatically resizes iframes, but this interferes
+ * with banner alignment CSS rules. This function prevents that interference by:
+ * 1. Adding exclusion classes that the theme checks for
+ * 2. Enforcing original dimensions with !important priority
+ * 3. Preserving alignment-specific margin settings per banner type
  */
 function blabber_child_prevent_banner_iframe_resizing() {
     ?>
@@ -154,12 +166,14 @@ function blabber_child_prevent_banner_iframe_resizing() {
     jQuery(document).ready(function($) {
         // Mark banner iframes to be excluded from theme resizing using the theme's built-in exclusion classes
         // The Blabber theme checks for these classes in its blabber_resize_video() function
-        $('.iwz-footer-banner iframe, .iwz-head-banner iframe, .iwz-content-banner iframe, .iwz-sidebar-banner iframe, .iwz-menu-banner iframe, .iwz-blabber-footer-banner iframe, .iwz-blabber-header-banner iframe')
-            .addClass('blabber_noresize trx_addons_noresize');
+        // UPDATED: Added Blabber Footer Start banners to prevent alignment issues
+        $('.iwz-footer-banner iframe, .iwz-head-banner iframe, .iwz-content-banner iframe, .iwz-sidebar-banner iframe, .iwz-menu-banner iframe, .iwz-blabber-footer-banner iframe, .iwz-blabber-header-banner iframe, div[id^="iwz-banner-blabber_footer_start-"] iframe')
+            .addClass('blabber_noresize trx_addons_noresize trx_addons_resize');
         
         // Preserve original dimensions for banner iframes by setting them with !important priority
         // This ensures they override any inline styles set by the theme's JavaScript
-        $('.iwz-footer-banner iframe, .iwz-head-banner iframe, .iwz-content-banner iframe, .iwz-sidebar-banner iframe, .iwz-menu-banner iframe, .iwz-blabber-footer-banner iframe, .iwz-blabber-header-banner iframe').each(function() {
+        // UPDATED: Added Blabber Footer Start banners to maintain proper alignment
+        $('.iwz-footer-banner iframe, .iwz-head-banner iframe, .iwz-content-banner iframe, .iwz-sidebar-banner iframe, .iwz-menu-banner iframe, .iwz-blabber-footer-banner iframe, .iwz-blabber-header-banner iframe, div[id^="iwz-banner-blabber_footer_start-"] iframe').each(function() {
             var $iframe = $(this);
             var originalWidth = $iframe.attr('width');
             var originalHeight = $iframe.attr('height');
@@ -175,12 +189,22 @@ function blabber_child_prevent_banner_iframe_resizing() {
                 this.style.setProperty('width', originalWidth + 'px', 'important');
                 this.style.setProperty('height', originalHeight + 'px', 'important');
                 
-                // Set margin and padding - use auto margins for centering blabber footer banners
-                if ($iframe.closest('.iwz-blabber-footer-banner').length > 0) {
+                // Set margin based on banner type and alignment
+                // Blabber Footer Start banners: Respect CSS alignment rules (don't force auto centering)
+                // Regular Blabber Footer banners: Use auto margins for centering
+                // Other banners: Use zero margins
+                if ($iframe.closest('div[id^="iwz-banner-blabber_footer_start-"]').length > 0) {
+                    // For Blabber Footer Start banners: Remove conflicting auto margins
+                    // Let the CSS alignment rules handle the positioning instead
+                    this.style.setProperty('margin', '0', 'important');
+                } else if ($iframe.closest('.iwz-blabber-footer-banner').length > 0) {
+                    // For regular Blabber Footer banners: Keep auto centering
                     this.style.setProperty('margin', '0 auto', 'important');
                 } else {
+                    // For all other banner types: Use zero margins
                     this.style.setProperty('margin', '0', 'important');
                 }
+                
                 this.style.setProperty('padding', '0', 'important');
                 this.style.setProperty('display', 'block', 'important');
                 this.style.setProperty('vertical-align', 'top', 'important');
