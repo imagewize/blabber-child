@@ -142,3 +142,53 @@ function blabber_child_override_avatar_function() {
     add_filter('get_avatar', 'blabber_child_safe_avatar', 10, 5);
 }
 add_action('init', 'blabber_child_override_avatar_function', 1);
+
+/**
+ * Prevent Blabber theme from resizing banner container iframes - IMPROVED VERSION
+ * Uses the theme's built-in exclusion system and CSS priority enforcement
+ * This approach is more reliable than the timeout-based JavaScript solution
+ */
+function blabber_child_prevent_banner_iframe_resizing() {
+    ?>
+    <script type="text/javascript">
+    jQuery(document).ready(function($) {
+        // Mark banner iframes to be excluded from theme resizing using the theme's built-in exclusion classes
+        // The Blabber theme checks for these classes in its blabber_resize_video() function
+        $('.iwz-footer-banner iframe, .iwz-head-banner iframe, .iwz-content-banner iframe, .iwz-sidebar-banner iframe, .iwz-menu-banner iframe, .iwz-blabber-footer-banner iframe, .iwz-blabber-header-banner iframe')
+            .addClass('blabber_noresize trx_addons_noresize');
+        
+        // Preserve original dimensions for banner iframes by setting them with !important priority
+        // This ensures they override any inline styles set by the theme's JavaScript
+        $('.iwz-footer-banner iframe, .iwz-head-banner iframe, .iwz-content-banner iframe, .iwz-sidebar-banner iframe, .iwz-menu-banner iframe, .iwz-blabber-footer-banner iframe, .iwz-blabber-header-banner iframe').each(function() {
+            var $iframe = $(this);
+            var originalWidth = $iframe.attr('width');
+            var originalHeight = $iframe.attr('height');
+            
+            // Only proceed if both width and height attributes exist
+            if (originalWidth && originalHeight) {
+                // Store original dimensions as data attributes for reference
+                $iframe.data('original-width', originalWidth);
+                $iframe.data('original-height', originalHeight);
+                
+                // Set dimensions as inline styles with !important flag to override theme's JavaScript
+                // Using setProperty with 'important' flag ensures highest CSS priority
+                this.style.setProperty('width', originalWidth + 'px', 'important');
+                this.style.setProperty('height', originalHeight + 'px', 'important');
+                
+                // Set margin and padding - use auto margins for centering blabber footer banners
+                if ($iframe.closest('.iwz-blabber-footer-banner').length > 0) {
+                    this.style.setProperty('margin', '0 auto', 'important');
+                } else {
+                    this.style.setProperty('margin', '0', 'important');
+                }
+                this.style.setProperty('padding', '0', 'important');
+                this.style.setProperty('display', 'block', 'important');
+                this.style.setProperty('vertical-align', 'top', 'important');
+            }
+        });
+    });
+    </script>
+    <?php
+}
+// Use early priority (1) to ensure this runs before the theme's resize function
+add_action('wp_footer', 'blabber_child_prevent_banner_iframe_resizing', 1);
