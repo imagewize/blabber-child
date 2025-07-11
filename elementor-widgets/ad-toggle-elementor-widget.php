@@ -65,6 +65,9 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
                 ],
                 'default' => 'right',
                 'toggle' => true,
+                'selectors' => [
+                    '{{WRAPPER}} .ad-toggle-elementor-widget' => 'text-align: {{VALUE}};',
+                ],
             ]
         );
 
@@ -202,6 +205,41 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
         );
 
         $this->end_controls_section();
+
+        // Widget Container Spacing Section
+        $this->start_controls_section(
+            'container_spacing_section',
+            [
+                'label' => __('Container Spacing', 'blabber-child'),
+                'tab' => \Elementor\Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_responsive_control(
+            'container_margin',
+            [
+                'label' => __('Margin', 'blabber-child'),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em', '%'],
+                'selectors' => [
+                    '{{WRAPPER}}' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'container_padding',
+            [
+                'label' => __('Padding', 'blabber-child'),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em', '%'],
+                'selectors' => [
+                    '{{WRAPPER}}' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
     }
 
     protected function render() {
@@ -211,9 +249,9 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
         $widget_id = uniqid('toggle_ads_');
         ?>
         <div class="ad-toggle-elementor-widget">
-            <div class="ad-toggle-form-group" style="display: inline-block;">
+            <div class="ad-toggle-form-group">
                 <input type="checkbox" class="ad-toggle-checkbox" name="toggle_ads" id="<?php echo esc_attr($widget_id); ?>" style="display: none;">
-                <label class="ad-toggle-label" for="<?php echo esc_attr($widget_id); ?>" style="cursor: pointer; font-size: 14px; user-select: none; display: flex; align-items: center; gap: 10px; position: relative;">
+                <label class="ad-toggle-label" for="<?php echo esc_attr($widget_id); ?>" style="cursor: pointer; font-size: 14px; user-select: none; display: inline-flex; align-items: center; gap: 10px; position: relative;">
                     <?php echo esc_html($button_text); ?>
                 </label>
             </div>
@@ -362,9 +400,9 @@ class Ad_Toggle_Elementor_Widget extends \Elementor\Widget_Base {
         var widget_id = 'toggle_ads_' + Math.random().toString(36).substr(2, 9);
         #>
         <div class="ad-toggle-elementor-widget">
-            <div class="ad-toggle-form-group" style="display: inline-block;">
+            <div class="ad-toggle-form-group">
                 <input type="checkbox" class="ad-toggle-checkbox" name="toggle_ads" id="{{{ widget_id }}}" style="display: none;">
-                <label class="ad-toggle-label" for="{{{ widget_id }}}" style="cursor: pointer; font-size: 14px; user-select: none; display: flex; align-items: center; gap: 10px; position: relative;">
+                <label class="ad-toggle-label" for="{{{ widget_id }}}" style="cursor: pointer; font-size: 14px; user-select: none; display: inline-flex; align-items: center; gap: 10px; position: relative;">
                     {{{ button_text }}}
                 </label>
             </div>
